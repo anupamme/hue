@@ -257,7 +257,12 @@ bool ClientImpl::setAttr(const string& key, const string& value)
     else if (key == "password") {
         password = value;
         free(secret);
+        secret = 0;
         secret = (sasl_secret_t*) malloc(sizeof(sasl_secret_t) + password.length());
+        if (!secret) {
+            setError("setAttr", -1, "Memory allocation failure for password secret", key);
+            return false;
+        }
     }
     else if (key == "host")
         hostName = value;
